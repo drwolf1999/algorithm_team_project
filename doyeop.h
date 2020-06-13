@@ -19,7 +19,7 @@ class DoYeop : public FileManager {
     std::vector<std::vector<int>> G;
     void Insert();
     void Connect();
-    string FindEulerPath();
+    std::string FindEulerPath();
     public:
     DoYeop(const char * REFER_FILE, const char * SHORT_FILE, const int MISMATCH);
     ~DoYeop();

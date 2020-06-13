@@ -17,7 +17,12 @@ void DoYeop::Insert() {
 }
 
 void DoYeop::Connect() {
-    //
+    queue<AhoCorasick<Node>*> Q;
+    Q.push(ac);
+}
+
+string DoYeop::FindEulerPath() {
+    return "test";
 }
 
 DoYeop::DoYeop(const char * REFER_FILE, const char * SHORT_FILE, const int MISMATCH) : FileManager(REFER_FILE, SHORT_FILE, MISMATCH) {

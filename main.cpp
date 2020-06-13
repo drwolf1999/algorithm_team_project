@@ -17,6 +17,6 @@ int main() {
     const int MISMATCH = 4;
     DoYeop * dy = new DoYeop(REFERENCE_FILE, SHORT_READ_FILE, MISMATCH);
     std::string ans = dy->Solve();
-
+    std::cout << ans;
     return 0;
 }
