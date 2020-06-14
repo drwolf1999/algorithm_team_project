@@ -16,7 +16,7 @@ int main() {
     const std::string REFERENCE_FILE = (CURRENT_DIR + "refer.txt");
     const std::string SHORT_READ_FILE = (CURRENT_DIR + "shortread.txt");
     const int MISMATCH = 4;
-    DoYeop * dy = new DoYeop(REFERENCE_FILE.c_str(), SHORT_READ_FILE.c_str(), MISMATCH, 7);
+    DoYeop * dy = new DoYeop(REFERENCE_FILE.c_str(), SHORT_READ_FILE.c_str(), MISMATCH, 10);
     std::string ans = dy->Solve();
     std::cout << ans;
     return 0;

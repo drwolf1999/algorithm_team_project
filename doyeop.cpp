@@ -60,10 +60,26 @@ void DoYeop::Connect() {
             }
         }
     }
+    // for (int i = 0; i < (int)G.size(); i++) {
+    //    cout << shortreads[i] << " : ";
+    //    for (int j = 0; j < G[i].size(); j++)
+    //        cout << shortreads[G[i][j]] << ' ';
+    //    cout << endl;
+    // }
+    // cout << endl;
 }
 
 string DoYeop::FindEulerPath() {
     Euler euler(G);
+    //
+    //for (int i = 0; i < euler.G.size(); i++) {
+    //    cout << shortreads[i] << " : ";
+    //    for (int j = 0; j < euler.G[i].size(); j++)
+    //        cout << shortreads[euler.G[i][j]->to] << ' ';
+    //    cout << endl;
+    //}
+    //return "";
+    //
     vector<int> result = euler.find();
     string ret(shortreads[result[0]]);
     rep(i, 1, result.size()) {

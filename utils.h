@@ -123,12 +123,12 @@ class Euler {
     std::vector<int> indegree, outdegree;
     std::vector<int> find(int cur) {
         std::vector<int> ret;
-        for (int i = 0; i < G[cur].size(); i++) {
+        for (int i = 0; i < (int)G[cur].size(); i++) {
             if (G[cur][i]->go) {
                 G[cur][i]->go = false;
                 if (G[cur][i]->back != nullptr) G[cur][i]->back->go = false;
                 std::vector<int> e = find(G[cur][i]->to);
-                for (int j = 0; j < e.size(); j++) ret.push_back(e[j]);
+                for (int j = 0; j < (int)e.size(); j++) ret.push_back(e[j]);
             }
         }
         ret.insert(ret.begin(), cur);
@@ -140,17 +140,17 @@ public:
         visit.resize(G.size());
         indegree.resize(G.size());
         outdegree.resize(G.size());
-        std::cout << "g\n";
-        for (int i = 0; i < g.size(); i++) {
-            std::cout << i << " : ";
-            for (int j = 0; j < g[i].size(); j++) {
-                std::cout << g[i][j] << ' ';
-            }
-            std::cout << '\n';
-        }
-        std::cout << '\n';
-        for (int i = 0; i < g.size(); i++) {
-            for (int j = 0; j < g[i].size(); j++) {
+        // std::cout << "g\n";
+        // for (int i = 0; i < (unsigned int)g.size(); i++) {
+        //     std::cout << i << " : ";
+        //     for (int j = 0; j < (unsigned int)g[i].size(); j++) {
+        //         std::cout << g[i][j] << ' ';
+        //     }
+        //     std::cout << '\n';
+        // }
+        // std::cout << '\n';
+        for (int i = 0; i < (int)g.size(); i++) {
+            for (int j = 0; j < (int)g[i].size(); j++) {
                 indegree[g[i][j]]++;
                 outdegree[i]++;
                 Edge * a = new Edge(g[i][j]), * b = new Edge(i);
@@ -162,7 +162,7 @@ public:
     }
     std::vector<int> find() {
         int start = 0, __min = 1 << 29;
-        for (int i = 0; i < G.size(); i++) {
+        for (int i = 0; i < (int)G.size(); i++) {
             if (indegree[i] < __min) {
                 __min = indegree[i];
                 start = i;
