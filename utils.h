@@ -1,6 +1,11 @@
 #ifndef __utils__
 #define __utils__ 1
 
+// #include <iostream>
+// #include <string>
+// #include <vector>
+// #include <Windows.h>
+// #include <assert.h>
 #include <bits/stdc++.h>
 
 class Utility {
@@ -62,6 +67,15 @@ template <class T> class AhoCorasick {
     std::vector<T> find(const std::string &s) {
         return find(s.c_str());
     }
+    bool EndNode() {
+        return terminal;
+    }
+    AhoCorasick * GetChild(int idx) {
+        return child[idx];
+    }
+    std::vector<T> GetIdentifier() {
+        return identifiers;
+    }
 };
 
 //////////////////////////////////////// Pair ////////////////////////////////
@@ -88,6 +102,73 @@ template <class T1, class T2> class Pair {
     friend std::ostream &operator<<(std::ostream &stream, Pair p) {
         stream << p.x << ' ' << p.y;
         return stream;
+    }
+};
+
+/////////////////////////////////////// Edge ////////////////////////////////////
+class Edge {
+public:
+    int to;
+    Edge * back;
+    bool go;
+    Edge(int _to = -1, bool g = true, Edge * b = nullptr) : to(_to), go(g), back(b) {}
+};
+
+
+/////////////////////////////////////// Euler Path ///////////////////////////////
+
+class Euler {
+    std::vector<std::vector<Edge*>> G;
+    std::vector<bool> visit;
+    std::vector<int> indegree, outdegree;
+    std::vector<int> find(int cur) {
+        std::vector<int> ret;
+        for (int i = 0; i < G[cur].size(); i++) {
+            if (G[cur][i]->go) {
+                G[cur][i]->go = false;
+                if (G[cur][i]->back != nullptr) G[cur][i]->back->go = false;
+                std::vector<int> e = find(G[cur][i]->to);
+                for (int j = 0; j < e.size(); j++) ret.push_back(e[j]);
+            }
+        }
+        ret.insert(ret.begin(), cur);
+        return ret;
+    }
+public:
+    Euler(const std::vector<std::vector<int>> &g) {
+        G.resize(g.size());
+        visit.resize(G.size());
+        indegree.resize(G.size());
+        outdegree.resize(G.size());
+        std::cout << "g\n";
+        for (int i = 0; i < g.size(); i++) {
+            std::cout << i << " : ";
+            for (int j = 0; j < g[i].size(); j++) {
+                std::cout << g[i][j] << ' ';
+            }
+            std::cout << '\n';
+        }
+        std::cout << '\n';
+        for (int i = 0; i < g.size(); i++) {
+            for (int j = 0; j < g[i].size(); j++) {
+                indegree[g[i][j]]++;
+                outdegree[i]++;
+                Edge * a = new Edge(g[i][j]), * b = new Edge(i);
+                b->back = a;
+                G[i].push_back(a);
+                G[j].push_back(b);
+            }
+        }
+    }
+    std::vector<int> find() {
+        int start = 0, __min = 1 << 29;
+        for (int i = 0; i < G.size(); i++) {
+            if (indegree[i] < __min) {
+                __min = indegree[i];
+                start = i;
+            }
+        }
+        return find(start);
     }
 };
 

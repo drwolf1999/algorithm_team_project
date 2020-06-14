@@ -17,11 +17,13 @@ typedef Pair<int, bool> Node;
 class DoYeop : public FileManager {
     AhoCorasick<Node> *ac;
     std::vector<std::vector<int>> G;
+    int K_MER;
+    void Split();
     void Insert();
     void Connect();
     std::string FindEulerPath();
     public:
-    DoYeop(const char * REFER_FILE, const char * SHORT_FILE, const int MISMATCH);
+    DoYeop(const char * REFER_FILE, const char * SHORT_FILE, const int MISMATCH, int K_mer);
     ~DoYeop();
     std::string Solve();
 };

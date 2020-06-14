@@ -8,14 +8,15 @@
 #define GetCurrentDir getcwd
 #endif
 
+#include <string>
 
 int main() {
-    // const char * CURRENT_DIR = "/Users/doyeopkim/Study/myProject/School/algorithm_team_project/";
-    const char * CURRENT_DIR = "E:/DownloadsFold/assignment/algorithm/algorithm_team_project/";
-    const char * REFERENCE_FILE = (std::string(CURRENT_DIR) + "refer.txt").c_str();
-    const char * SHORT_READ_FILE = (std::string(CURRENT_DIR) + "shortread.txt").c_str();
+    // const std::string CURRENT_DIR = "/Users/doyeopkim/Study/myProject/School/algorithm_team_project/";
+    const std::string CURRENT_DIR = "E:/DownloadsFold/assignment/algorithm/algorithm_team_project/";
+    const std::string REFERENCE_FILE = (CURRENT_DIR + "refer.txt");
+    const std::string SHORT_READ_FILE = (CURRENT_DIR + "shortread.txt");
     const int MISMATCH = 4;
-    DoYeop * dy = new DoYeop(REFERENCE_FILE, SHORT_READ_FILE, MISMATCH);
+    DoYeop * dy = new DoYeop(REFERENCE_FILE.c_str(), SHORT_READ_FILE.c_str(), MISMATCH, 7);
     std::string ans = dy->Solve();
     std::cout << ans;
     return 0;
