@@ -2,3 +2,5 @@ run.o
 .vscode
 .vscode/*
 *.exe
+.lnk
+*.txt
