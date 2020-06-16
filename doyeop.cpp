@@ -6,6 +6,7 @@ using namespace std;
 
 void DoYeop::Split() {
     vector<string> tmp(shortreads);
+    vector<string> candidate;
     shortreads.clear();
     assert(tmp[0].size() >= K_MER);
     for (int t = 0; t < tmp.size(); t++) {
@@ -15,12 +16,34 @@ void DoYeop::Split() {
             if (i == K_MER - 1) {
                 for (int j = 0; j < K_MER; j++)
                     shortread.push_back(s[j]);
+                candidate.push_back(shortread);
             } else {
                 shortread.erase(shortread.begin());
                 shortread.push_back(s[i]);
             }
             shortreads.push_back(shortread);
         }
+    }
+    sort(shortreads.begin(), shortreads.end());
+    shortreads.erase(unique(shortreads.begin(), shortreads.end()), shortreads.end());
+    for (int _try = 0; _try < 2; _try++) {
+        for (int i = 0; i < candidate.size(); i++) {
+            int counter = 0;
+            for (int t = 0; t < 4; t++) {
+                char c = "ATGC"[t];
+                string s = candidate[i];
+                s.pop_back();
+                s.insert(s.begin(), c);
+                auto it = lower_bound(shortreads.begin(), shortreads.end(), s);
+                if (it == shortreads.end() || *it != s) {
+                    counter++;
+                }
+            }
+            if (counter == 4 - _try) {
+                starting.push_back(lower_bound(shortreads.begin(), shortreads.end(), candidate[i]) - shortreads.begin());
+            }
+        }
+        if (starting.size()) break;
     }
 }
 
@@ -69,7 +92,7 @@ void DoYeop::Connect() {
     // cout << endl;
 }
 
-string DoYeop::FindEulerPath() {
+vector<string> DoYeop::FindEulerPath() {
     Euler euler(G);
     //
     //for (int i = 0; i < euler.G.size(); i++) {
@@ -80,25 +103,36 @@ string DoYeop::FindEulerPath() {
     //}
     //return "";
     //
-    vector<int> result = euler.find();
-    string ret(shortreads[result[0]]);
-    rep(i, 1, result.size()) {
-        ret.push_back(shortreads[result[i]].back());
+    if (starting.empty()) starting = vector<int>({-1});
+    vector<string> ret;
+    rep(k, 0, starting.size()) {
+        int start = starting[i];
+        cout << "START : " << start << ':' << (start == -1 ? "" : shortreads[start]) << '\n';
+        vector<int> result = euler.find(start);
+        string res(shortreads[result[0]]);
+        rep(i, 1, result.size()) {
+            res.push_back(shortreads[result[i]].back());
+        }
+        ret.push_back(res);
     }
     return ret;
 }
 
-DoYeop::DoYeop(const char * REFER_FILE, const char * SHORT_FILE, const int MISMATCH, int K_mer) : FileManager(REFER_FILE, SHORT_FILE, MISMATCH) {
+DoYeop::DoYeop(const char * REFER_FILE, const char * SHORT_FILE, const int MISMATCH, unsigned long K_mer) : FileManager(REFER_FILE, SHORT_FILE, MISMATCH) {
     ac = new AhoCorasick<Node>();
-    K_MER = K_mer;
+    auto get_k_mer_k = [](unsigned long x) {
+        return x <= 15 ? (x + 1) / 2 : x <= 20 ? x / 3 : x / 4;
+    };
+    K_MER = min(K_mer, get_k_mer_k(shortreads[0].size()));
 }
 
 DoYeop::~DoYeop() {
     delete ac;
 }
 
-std::string DoYeop::Solve() {
+std::vector<std::string> DoYeop::Solve() {
     auto echo = [=](int x, int y) {
+        return;
         cout.precision(4);
         cout << fixed;
         cout << '\r' << double(x) * 100.0 / y << "\t% complete";
@@ -107,9 +141,11 @@ std::string DoYeop::Solve() {
     echo(1, 4);
     Insert();
     echo(2, 4);
+    cout << "Generating Graph\n";
     Connect();
+    cout << "Complete Generate Graph\n";
     echo(3, 4);
-    string ret = FindEulerPath();
+    vector<string> ret = FindEulerPath();
     echo(4, 4);
     cout << endl;
     return ret;

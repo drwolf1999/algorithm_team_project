@@ -3,7 +3,6 @@
 #include <iostream>
 
 FileManager::FileManager(const char * REFER_FILE, const char * SHORT_FILE, const int MISMATCH) {
-    std::cout << "REFER : " << REFER_FILE << ", SHORT : " << SHORT_FILE << std::endl;
     std::ifstream refer_file(REFER_FILE), short_file(SHORT_FILE);
     if (!refer_file.is_open()) {
         std::cout << "reference file is not exist\n";

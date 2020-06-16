@@ -121,13 +121,13 @@ class Euler {
     std::vector<std::vector<Edge*>> G;
     std::vector<bool> visit;
     std::vector<int> indegree, outdegree;
-    std::vector<int> find(int cur) {
+    std::vector<int> find_recurse(int cur) {
         std::vector<int> ret;
         for (int i = 0; i < (int)G[cur].size(); i++) {
             if (G[cur][i]->go) {
                 G[cur][i]->go = false;
                 if (G[cur][i]->back != nullptr) G[cur][i]->back->go = false;
-                std::vector<int> e = find(G[cur][i]->to);
+                std::vector<int> e = find_recurse(G[cur][i]->to);
                 for (int j = 0; j < (int)e.size(); j++) ret.push_back(e[j]);
             }
         }
@@ -160,15 +160,21 @@ public:
             }
         }
     }
-    std::vector<int> find() {
-        int start = 0, __min = 1 << 29;
-        for (int i = 0; i < (int)G.size(); i++) {
-            if (indegree[i] < __min) {
-                __min = indegree[i];
-                start = i;
+    void reset() {
+        for (int i = 0; i < G.size(); i++) {
+            for (int j = 0; j < G[i].size(); j++) {
+                if (!G[i][j]->go) G[i][j]->go = true;
             }
         }
-        return find(start);
+    }
+    std::vector<int> find(int start) {
+        int __min__ = 1 << 29;
+        if (start == -1) {
+            for (int i = 0; i < G.size(); i++) {
+                if (indegree[i] <= __min__) start = i;
+            }
+        }
+        return find_recurse(start);
     }
 };
 
