@@ -128,43 +128,6 @@ vector<string> DoYeop::FindEulerPath() {
         }
         contigs.push_back(res);
     }
-    //KMP kmp;
-    //int delta = 2;
-    //while (true) {
-    //    bool flag = false;
-    //    string newString;
-    //    rep(i, 0, contigs.size()) rep(j, 0, contigs.size()) {
-    //        if (i == j) continue;
-    //        string p = contigs[j].substr(0, K_MER - delta);
-    //        vector<int> k = kmp.run(contigs[i], p);
-    //        if (k.size()) {
-    //            int last = k[0];
-    //            if (last == 0) {
-    //                if (k.size() == 1)
-    //                    break;
-    //                last = k[1];
-    //            }
-    //            newString = contigs[i];
-    //            if (contigs[j].size() <= contigs[i].size() - last) {
-    //                //
-    //                break;
-    //            }
-    //            if (rand() % 2) rep(k, last, contigs[i].size()) newString[k] = contigs[j][k - last];
-    //            rep(k, contigs[i].size() - last, contigs[j].size()) newString.push_back(contigs[j][k]);
-    //            swap(contigs[i], contigs[contigs.size() - 1]); 
-    //            swap(contigs[j], contigs[contigs.size() - 2]);
-    //            flag = true;
-    //            goto at;
-    //        }
-    //    }
-    //    at:
-    //    if (flag) {
-    //        rep(i, 0, 2) contigs.pop_back();
-    //        contigs.push_back(newString);
-    //    }
-    //    if (!flag) delta++;
-    //    if (delta == K_MER || contigs.size() == 1) break;
-    //}
     return contigs;
 }
 
