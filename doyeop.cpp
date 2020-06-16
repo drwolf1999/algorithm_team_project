@@ -1,5 +1,11 @@
 #include "doyeop.h"
-#include <bits/stdc++.h>
+#include <assert.h>
+#include <iostream>
+#include <queue>
+#include <stack>
+#include <map>
+#include <map>
+#include <vector>
 #define rep(i, x, y) for (unsigned int i = x; i < (unsigned int)y; i++)
 #define repinclude(i, x, y) for (int i = x; i <= y; i++)
 using namespace std;
@@ -26,7 +32,7 @@ void DoYeop::Split() {
     }
     sort(shortreads.begin(), shortreads.end());
     shortreads.erase(unique(shortreads.begin(), shortreads.end()), shortreads.end());
-    for (int _try = 0; _try < 2; _try++) {
+    for (int try_ = 0; try_ < 2; try_++) {
         for (int i = 0; i < candidate.size(); i++) {
             int counter = 0;
             for (int t = 0; t < 4; t++) {
@@ -39,24 +45,38 @@ void DoYeop::Split() {
                     counter++;
                 }
             }
-            if (counter == 4 - _try) {
+            if (counter == 4 - try_) {
                 starting.push_back(lower_bound(shortreads.begin(), shortreads.end(), candidate[i]) - shortreads.begin());
             }
         }
         if (starting.size()) break;
     }
+    sort(starting.begin(), starting.end());
+    starting.erase(unique(starting.begin(), starting.end()), starting.end());
 }
 
 void DoYeop::Insert() {
+    vector<string> k_mer;
+    map<string, int> counter;
     rep(i, 0, shortreads.size()) {
         string s = shortreads[i];
         // gen prefix
         s.pop_back();
         ac->insert(s, Node(i, true));
+        k_mer.push_back(s);
+        counter[s]++;
         // gen suffix
         s.erase(s.begin());
         s.push_back(shortreads[i].back());
         ac->insert(s, Node(i, false));
+        k_mer.push_back(s);
+        //counter[s]++;
+    }
+    sort(k_mer.begin(), k_mer.end());
+    k_mer.erase(unique(k_mer.begin(), k_mer.end()), k_mer.end());
+    shortread_counter.resize(shortreads.size());
+    for (auto it = counter.begin(); it != counter.end(); it++) {
+        shortread_counter[lower_bound(shortreads.begin(), shortreads.end(), it->first) - shortreads.begin()] = it->second;
     }
 }
 
@@ -93,35 +113,68 @@ void DoYeop::Connect() {
 }
 
 vector<string> DoYeop::FindEulerPath() {
-    Euler euler(G);
-    //
-    //for (int i = 0; i < euler.G.size(); i++) {
-    //    cout << shortreads[i] << " : ";
-    //    for (int j = 0; j < euler.G[i].size(); j++)
-    //        cout << shortreads[euler.G[i][j]->to] << ' ';
-    //    cout << endl;
-    //}
-    //return "";
-    //
+    Traversal traversal(G, shortread_counter);
+    //// code
     if (starting.empty()) starting = vector<int>({-1});
-    vector<string> ret;
+    vector<string> contigs;
     rep(k, 0, starting.size()) {
-        int start = starting[i];
-        cout << "START : " << start << ':' << (start == -1 ? "" : shortreads[start]) << '\n';
-        vector<int> result = euler.find(start);
+        int start = starting[k];
+        //cout << "START : " << start << ':' << (start == -1 ? "" : shortreads[start]) << '\n';
+        vector<int> result = traversal.find(start);
+        traversal.reset();
         string res(shortreads[result[0]]);
         rep(i, 1, result.size()) {
             res.push_back(shortreads[result[i]].back());
         }
-        ret.push_back(res);
+        contigs.push_back(res);
     }
-    return ret;
+    //KMP kmp;
+    //int delta = 2;
+    //while (true) {
+    //    bool flag = false;
+    //    string newString;
+    //    rep(i, 0, contigs.size()) rep(j, 0, contigs.size()) {
+    //        if (i == j) continue;
+    //        string p = contigs[j].substr(0, K_MER - delta);
+    //        vector<int> k = kmp.run(contigs[i], p);
+    //        if (k.size()) {
+    //            int last = k[0];
+    //            if (last == 0) {
+    //                if (k.size() == 1)
+    //                    break;
+    //                last = k[1];
+    //            }
+    //            newString = contigs[i];
+    //            if (contigs[j].size() <= contigs[i].size() - last) {
+    //                //
+    //                break;
+    //            }
+    //            if (rand() % 2) rep(k, last, contigs[i].size()) newString[k] = contigs[j][k - last];
+    //            rep(k, contigs[i].size() - last, contigs[j].size()) newString.push_back(contigs[j][k]);
+    //            swap(contigs[i], contigs[contigs.size() - 1]); 
+    //            swap(contigs[j], contigs[contigs.size() - 2]);
+    //            flag = true;
+    //            goto at;
+    //        }
+    //    }
+    //    at:
+    //    if (flag) {
+    //        rep(i, 0, 2) contigs.pop_back();
+    //        contigs.push_back(newString);
+    //    }
+    //    if (!flag) delta++;
+    //    if (delta == K_MER || contigs.size() == 1) break;
+    //}
+    return contigs;
 }
 
 DoYeop::DoYeop(const char * REFER_FILE, const char * SHORT_FILE, const int MISMATCH, unsigned long K_mer) : FileManager(REFER_FILE, SHORT_FILE, MISMATCH) {
     ac = new AhoCorasick<Node>();
-    auto get_k_mer_k = [](unsigned long x) {
-        return x <= 15 ? (x + 1) / 2 : x <= 20 ? x / 3 : x / 4;
+    auto get_k_mer_k = [=](unsigned long x) {
+        if (x <= 30) return (x + 1) / 2;
+        //if (x <= 70 && shortreads.size() >= x * 2) return x / 3;
+        //if (x <= 200) return x / 4;
+        return (unsigned long)21;
     };
     K_MER = min(K_mer, get_k_mer_k(shortreads[0].size()));
 }
@@ -129,24 +182,21 @@ DoYeop::DoYeop(const char * REFER_FILE, const char * SHORT_FILE, const int MISMA
 DoYeop::~DoYeop() {
     delete ac;
 }
-
+// 99382
 std::vector<std::string> DoYeop::Solve() {
     auto echo = [=](int x, int y) {
-        return;
-        cout.precision(4);
-        cout << fixed;
+        cout.precision(6);
         cout << '\r' << double(x) * 100.0 / y << "\t% complete";
     };
+    echo(0, 4);
     Split();
     echo(1, 4);
     Insert();
     echo(2, 4);
-    cout << "Generating Graph\n";
     Connect();
-    cout << "Complete Generate Graph\n";
     echo(3, 4);
     vector<string> ret = FindEulerPath();
     echo(4, 4);
-    cout << endl;
+    cout << endl << endl;
     return ret;
 }

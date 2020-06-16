@@ -3,7 +3,6 @@
 #define __doyeop__ 1
 #include "utils.h"
 #include "file_manager.h"
-
 typedef Pair<int, bool> Node;
 
 /**
@@ -17,6 +16,7 @@ typedef Pair<int, bool> Node;
 class DoYeop : public FileManager {
     AhoCorasick<Node> *ac;
     std::vector<int> starting;
+    std::vector<int> shortread_counter;
     std::vector<std::vector<int>> G;
     unsigned long K_MER;
     void Split();

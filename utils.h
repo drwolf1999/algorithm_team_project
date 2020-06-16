@@ -1,12 +1,13 @@
 #ifndef __utils__
 #define __utils__ 1
 
-// #include <iostream>
-// #include <string>
-// #include <vector>
-// #include <Windows.h>
-// #include <assert.h>
-#include <bits/stdc++.h>
+#include <iostream>
+#include <string>
+#include <vector>
+#include <Windows.h>
+#include <assert.h>
+#include <queue>
+// #include <bits/stdc++.h>
 
 class Utility {
     public:
@@ -55,7 +56,8 @@ template <class T> class AhoCorasick {
         return child[next]->find(s + 1); // return find(s + 1) from child[next]
     }
     public:
-    AhoCorasick() {
+    AhoCorasick() : terminal(false) {
+        terminal = false;
         for (int i = 0; i < 4; i++) child[i] = nullptr;
     }
     ~AhoCorasick() {
@@ -115,19 +117,23 @@ public:
 };
 
 
-/////////////////////////////////////// Euler Path ///////////////////////////////
+/////////////////////////////////////// Traversal ///////////////////////////////
 
-class Euler {
+class Traversal {
     std::vector<std::vector<Edge*>> G;
-    std::vector<bool> visit;
-    std::vector<int> indegree, outdegree;
+    std::vector<int> max_visit;
+    std::vector<int> visit;
+    std::vector<int> indegree;
     std::vector<int> find_recurse(int cur) {
         std::vector<int> ret;
+        if (visit[cur] >= max_visit[cur]) return ret;
+        visit[cur]++;
         for (int i = 0; i < (int)G[cur].size(); i++) {
-            if (G[cur][i]->go) {
-                G[cur][i]->go = false;
-                if (G[cur][i]->back != nullptr) G[cur][i]->back->go = false;
-                std::vector<int> e = find_recurse(G[cur][i]->to);
+            Edge *& next = G[cur][i]; // caching
+            if (next->go) {
+                next->go = false;
+                if (next->back != nullptr) next->back->go = false;
+                std::vector<int> e = find_recurse(next->to);
                 for (int j = 0; j < (int)e.size(); j++) ret.push_back(e[j]);
             }
         }
@@ -135,11 +141,12 @@ class Euler {
         return ret;
     }
 public:
-    Euler(const std::vector<std::vector<int>> &g) {
+    Traversal(const std::vector<std::vector<int>> &g, const std::vector<int> &visit_counter) {
+        assert(visit_counter.size() == g.size());
         G.resize(g.size());
+        max_visit = visit_counter;
         visit.resize(G.size());
         indegree.resize(G.size());
-        outdegree.resize(G.size());
         // std::cout << "g\n";
         // for (int i = 0; i < (unsigned int)g.size(); i++) {
         //     std::cout << i << " : ";
@@ -152,7 +159,6 @@ public:
         for (int i = 0; i < (int)g.size(); i++) {
             for (int j = 0; j < (int)g[i].size(); j++) {
                 indegree[g[i][j]]++;
-                outdegree[i]++;
                 Edge * a = new Edge(g[i][j]), * b = new Edge(i);
                 b->back = a;
                 G[i].push_back(a);
@@ -166,6 +172,8 @@ public:
                 if (!G[i][j]->go) G[i][j]->go = true;
             }
         }
+        visit.clear();
+        visit.resize(G.size());
     }
     std::vector<int> find(int start) {
         int __min__ = 1 << 29;
@@ -175,6 +183,43 @@ public:
             }
         }
         return find_recurse(start);
+    }
+};
+
+
+///////////////////////////////////////////// KMP ///////////////////////////////////
+class KMP {
+    std::vector<int> getPI(const std::string &k) {
+        int m = k.size();
+        int j = 0;
+        std::vector<int> ret(m + 1);
+        for (int i = 1; i < m; i++) {
+            while (j > 0 && k[i] != k[j])
+                j = ret[j - 1];
+            if (k[i] == k[j])
+                ret[i] = ++j;
+        }
+        return ret;
+    }
+public:
+    std::vector<int> run(const std::string& text, const std::string& pattern) {
+        int j = 0;
+        std::vector<int> pi = getPI(pattern);
+        std::vector<int> ret;
+        int m = (int)pattern.size();
+        int n = (int)text.size();
+        for (int i = 0; i < n; i++) {
+            while (j > 0 && text[i] != pattern[j])
+                j = pi[j - 1];
+            if (text[i] == pattern[j]) {
+                if (j == m - 1) {
+                    ret.push_back(i - m + 1);
+                    j = pi[j];
+                }
+                else j++;
+            }
+        }
+        return ret;
     }
 };
 
