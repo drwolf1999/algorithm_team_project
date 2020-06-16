@@ -11,8 +11,21 @@
 #include <string>
 #include <fstream>
 #include <algorithm>
+#include <time.h>
 
+/// <summary>
+/// 20000 100 2000
+/// 25000 100 2000
+/// 30000 100 2000
+/// </summary>
+/// <returns></returns>
 int main() {
+    auto min = [](int x, int y) {
+        return x > y ? y : x;
+    };
+    auto abs = [](int x) {
+        return x > 0 ? x : -x;
+    };
     //const std::string CURRENT_DIR = "/Users/doyeopkim/Study/myProject/School/algorithm_team_project/";
     const std::string CURRENT_DIR = "E:/DownloadsFold/assignment/algorithm/algorithm_team_project/";
     const std::string REFERENCE_FILE = (CURRENT_DIR + "refer.txt");
@@ -21,7 +34,9 @@ int main() {
     const std::string MY_FILE = (CURRENT_DIR + "my.txt");
     const int MISMATCH = 4;
     DoYeop * dy = new DoYeop(REFERENCE_FILE.c_str(), SHORT_READ_FILE.c_str(), MISMATCH, 27);
+    clock_t __time__ = clock();
     std::vector<std::string> ans = dy->Solve();
+    __time__ = clock() - __time__;
     std::sort(ans.begin(), ans.end(), [](const std::string& l, const std::string& r) {
         if (l.size() == r.size()) return l < r;
         return l.size() > r.size();
@@ -34,6 +49,7 @@ int main() {
     /////////
     KMP kmp;
     std::vector<int> f = kmp.run(myDNA, ans[0]);
+    std::cout << "It taskes " << double(__time__) / CLOCKS_PER_SEC << "seconds\n\n";
     if (f.empty()) {
         int length = 0;
         int idx = -1;
@@ -42,7 +58,17 @@ int main() {
             idx = i;
             if (length * 2 >= myDNA.size()) break;
         }
-        std::cout << "N50 is a measure to describe the quality of assembled genomes that are fragmented in contigs of different length.\n";
+        int min_cnt = myDNA.size();
+		for (int push = 0; push <= abs(myDNA.size() - ans[idx].size()); push++) {
+            int cnt = 0;
+            for (int i = 0; i < min(myDNA.size(), ans[idx].size()); i++) {
+                cnt += ans[idx][i] == myDNA[i + push];
+            }
+            min_cnt = min(min_cnt, cnt);
+        }
+        std::cout << "N50 is a measure to describe the quality of assembled genomes that are fragmented in contigs of different length.\n"
+                  << "This value is meaningful when it is more than 1/4 of the my original DNA length.\n";
+        std::cout << "Matching Rate : " << double(min_cnt) * 100.0 / myDNA.size() << "%\n";
         std::cout << "N50 of this algorithm is " << ans[idx].size() << "\n\n";
     }
     else {
@@ -53,12 +79,6 @@ int main() {
     comp << "------------Original\n";
     comp << myDNA << "\n\n";
     comp << "------------Restore\n";
-    auto min = [](int x, int y) {
-        return x > y ? y : x;
-    };
-    auto abs = [](int x) {
-        return x > 0 ? x : -x;
-    };
     for (int t = 0; t < ans.size(); t++) {
         int cnt = 0;
         comp << "Contig " << t << '\n';
