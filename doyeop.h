@@ -22,7 +22,7 @@ class DoYeop : public FileManager {
     void Split();
     void Insert();
     void Connect();
-    std::vector<std::string> FindEulerPath();
+    std::vector<std::string> FindContigs();
     public:
     DoYeop(const char * REFER_FILE, const char * SHORT_FILE, const int MISMATCH, unsigned long K_mer);
     ~DoYeop();

@@ -21,7 +21,7 @@ FileManager::FileManager(const char * REFER_FILE, const char * SHORT_FILE, const
     refer_file.close();
     short_file.close();
     mismatch = MISMATCH;
-    std::cout << "Length of Reference : " << referDNA.size() << "\nNumber of Shortreads : " << shortreads.size() << "\nLength of Shortread : " << shortreads[0].size() << "\n\n";
+    std::cout << "Length of Original : " << referDNA.size() << "\nNumber of Shortreads : " << shortreads.size() << "\nLength of Shortread : " << shortreads[0].size() << "\n\n";
 }
 
 int FileManager::GetMismatch() { return mismatch; }

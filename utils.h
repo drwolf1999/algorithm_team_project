@@ -36,7 +36,7 @@ class Utility {
 //////////////////////////////////////// Aho-Corasick /////////////////////////////////////
 
 template <class T> class AhoCorasick {
-    AhoCorasick * child[4]; // child (0=>'A', 1=>'C', 2=>'G', 3=>'T')
+    AhoCorasick * child[4] = {nullptr, }; // child (0=>'A', 1=>'C', 2=>'G', 3=>'T')
     bool terminal; // this position is end
     std::vector<T> identifiers;
     void insert(const char * s, const T ident) { // Save the appearance of the pattern string s in the p position of the reference
@@ -111,16 +111,15 @@ template <class T1, class T2> class Pair {
 class Edge {
 public:
     int to;
-    Edge * back;
     bool go;
-    Edge(int _to = -1, bool g = true, Edge * b = nullptr) : to(_to), go(g), back(b) {}
+    Edge(int _to = -1, bool g = true) : to(_to), go(g) {}
 };
 
 
 /////////////////////////////////////// Traversal ///////////////////////////////
 
 class Traversal {
-    std::vector<std::vector<Edge*>> G;
+    std::vector<std::vector<Edge>> G;
     std::vector<int> max_visit;
     std::vector<int> visit;
     std::vector<int> indegree;
@@ -129,11 +128,10 @@ class Traversal {
         if (visit[cur] >= max_visit[cur]) return ret;
         visit[cur]++;
         for (int i = 0; i < (int)G[cur].size(); i++) {
-            Edge *& next = G[cur][i]; // caching
-            if (next->go) {
-                next->go = false;
-                if (next->back != nullptr) next->back->go = false;
-                std::vector<int> e = find_recurse(next->to);
+            Edge & next = G[cur][i]; // caching
+            if (next.go) {
+                next.go = false;
+                std::vector<int> e = find_recurse(next.to);
                 for (int j = 0; j < (int)e.size(); j++) ret.push_back(e[j]);
             }
         }
@@ -147,29 +145,18 @@ public:
         max_visit = visit_counter;
         visit.resize(G.size());
         indegree.resize(G.size());
-        // std::cout << "g\n";
-        // for (int i = 0; i < (unsigned int)g.size(); i++) {
-        //     std::cout << i << " : ";
-        //     for (int j = 0; j < (unsigned int)g[i].size(); j++) {
-        //         std::cout << g[i][j] << ' ';
-        //     }
-        //     std::cout << '\n';
-        // }
-        // std::cout << '\n';
         for (int i = 0; i < (int)g.size(); i++) {
             for (int j = 0; j < (int)g[i].size(); j++) {
                 indegree[g[i][j]]++;
-                Edge * a = new Edge(g[i][j]), * b = new Edge(i);
-                b->back = a;
+                Edge a = Edge(g[i][j]);
                 G[i].push_back(a);
-                G[j].push_back(b);
             }
         }
     }
     void reset() {
         for (int i = 0; i < G.size(); i++) {
             for (int j = 0; j < G[i].size(); j++) {
-                if (!G[i][j]->go) G[i][j]->go = true;
+                if (!G[i][j].go) G[i][j].go = true;
             }
         }
         visit.clear();
@@ -178,6 +165,7 @@ public:
     std::vector<int> find(int start) {
         int __min__ = 1 << 29;
         if (start == -1) {
+            std::cout << "LOG\n";
             for (int i = 0; i < G.size(); i++) {
                 if (indegree[i] <= __min__) start = i;
             }

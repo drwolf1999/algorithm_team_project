@@ -27,13 +27,14 @@ int main() {
         return x > 0 ? x : -x;
     };
     //const std::string CURRENT_DIR = "/Users/doyeopkim/Study/myProject/School/algorithm_team_project/";
-    const std::string CURRENT_DIR = "E:/DownloadsFold/assignment/algorithm/algorithm_team_project/";
-    const std::string REFERENCE_FILE = (CURRENT_DIR + "refer.txt");
-    const std::string SHORT_READ_FILE = (CURRENT_DIR + "shortread.txt");
+    //const std::string CURRENT_DIR = "E:/DownloadsFold/assignment/algorithm/algorithm_team_project/";
+    const std::string CURRENT_DIR = "E:/test_data_set/";
+    const std::string REFERENCE_FILE = (CURRENT_DIR + "test_ref_1000.txt");
+    const std::string SHORT_READ_FILE = (CURRENT_DIR + "shortread_1000.txt");
     const std::string COMPARE_FILE = (CURRENT_DIR + "compare.txt");
-    const std::string MY_FILE = (CURRENT_DIR + "my.txt");
+    const std::string MY_FILE = (CURRENT_DIR + "Mydna_1000.txt");
     const int MISMATCH = 4;
-    DoYeop * dy = new DoYeop(REFERENCE_FILE.c_str(), SHORT_READ_FILE.c_str(), MISMATCH, 27);
+    DoYeop * dy = new DoYeop(REFERENCE_FILE.c_str(), SHORT_READ_FILE.c_str(), MISMATCH, 7);
     clock_t __time__ = clock();
     std::vector<std::string> ans = dy->Solve();
     __time__ = clock() - __time__;
@@ -50,7 +51,7 @@ int main() {
     KMP kmp;
     std::vector<int> f = kmp.run(myDNA, ans[0]);
     std::cout << "It taskes " << double(__time__) / CLOCKS_PER_SEC << "seconds\n\n";
-    if (f.empty()) {
+    //if (f.empty()) {
         int length = 0;
         int idx = -1;
         for (int i = 0; i < ans.size(); i++) {
@@ -70,11 +71,11 @@ int main() {
                   << "This value is meaningful when it is more than 1/4 of the my original DNA length.\n";
         std::cout << "Matching Rate : " << double(min_cnt) * 100.0 / myDNA.size() << "%\n";
         std::cout << "N50 of this algorithm is " << ans[idx].size() << "\n\n";
-    }
-    else {
+    //}
+    //else {
         std::cout << "Accuracy of this algorithm is " << double(ans[0].size()) * 100.0 / myDNA.size() << "%\n\n";
-    }
-    ////// Compare ///////
+    //}
+    //// Compare ///////
     std::ofstream comp(COMPARE_FILE.c_str());
     comp << "------------Original\n";
     comp << myDNA << "\n\n";
