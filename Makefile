@@ -8,7 +8,7 @@ main: doyeop.o file_manager.o main.cpp
 
 # generate object file
 
-doyeop.o: doyeop.h doyeop.cpp utils.o
+doyeop.o: doyeop.h doyeop.cpp
 	$(GPP) $(CFLAGS) -c -o doyeop.o doyeop.cpp
 
 file_manager.o: file_manager.h file_manager.cpp

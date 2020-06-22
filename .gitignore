@@ -4,4 +4,4 @@ run.o
 *.exe
 *.lnk
 *.txt
-.o
+*.o

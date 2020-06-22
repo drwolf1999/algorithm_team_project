@@ -6,7 +6,6 @@
 #include <map>
 #include <map>
 #include <vector>
-#include <algorithm>
 #define rep(i, x, y) for (unsigned int i = x; i < (unsigned int)y; i++)
 #define repinclude(i, x, y) for (int i = x; i <= y; i++)
 using namespace std;
@@ -133,7 +132,7 @@ DoYeop::DoYeop(const char * REFER_FILE, const char * SHORT_FILE, const int MISMA
     ac = new AhoCorasick<Node>();
     auto get_k_mer_k = [=](unsigned long x) {
         if (x <= 10) return (x + 1) / 2;
-        else if (x <= 40) return (x + 4) / 5;
+        else if (x <= 50) return (x + 5) / 6;
         return (unsigned long)21;
     };
     K_MER = min(K_mer, get_k_mer_k(shortreads[0].size()));
